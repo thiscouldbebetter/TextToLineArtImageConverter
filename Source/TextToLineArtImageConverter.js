@@ -5,15 +5,15 @@ class TextToLineArtImageConverter
 	{
 		var linesAsStrings = 
 		[
-			"                               ",
-			"       +-+                     ",
-			" +-+  /  +-----------------+   ", 
-			" | +-+                      \\  ", // Backslashes are escaped.
-			" |                           + ",
-			" | +-+                      /  ",
-			" +-+  \\  +-----------------+   ", // Backslashes are escaped.
-			"       +-+                     ",
-			"                               "
+			"                                    ",
+			"         +-+                        ",
+			" +-+    /  +--------------------+   ", 
+			" | +---+                         \\  ", // Backslashes are escaped.
+			" |                                + ",
+			" | +---+                         /  ",
+			" +-+    \\  +--------------------+   ", // Backslashes are escaped.
+			"         +-+                        ",
+			"                                    "
 		];
 
 		var newline = "\n";
@@ -24,8 +24,20 @@ class TextToLineArtImageConverter
 
 	textToCanvas(edgesAsString, cellDimensionInPixels, lineThicknessInPixels)
 	{
+		var edgesAsStringContainsTabs = (edgesAsString.indexOf("\t") >= 0);
+		if (edgesAsStringContainsTabs)
+		{
+			this.throwFormatError("The string must not contain tab characters.");
+		}
+
 		var newline = "\n";
 		var cellRowsAsStrings = edgesAsString.split(newline);
+
+		var cellRowLengths = cellRowsAsStrings.map(x => x.length);
+		var cellRowLengthMax = Math.max(...cellRowLengths);
+		cellRowsAsStrings =
+			cellRowsAsStrings
+				.map(x => x.padEnd(cellRowLengthMax, " ") );
 
 		var sizeInCells = Coords.fromXY
 		(
@@ -48,8 +60,13 @@ class TextToLineArtImageConverter
 		var offsetFromStartOfPassCurrentToNext = Coords.create();
 		var charCodeForEdgeInDirection = "?";
 
-		for (var d = 0; d < 6; d++)
+		var directionIndicesToRead =
+			[0, 1, 2, 3, 4, 5];
+
+		for (var di = 0; di < directionIndicesToRead.length; di++)
 		{
+			var d = directionIndicesToRead[di];
+
 			if (d == 0)
 			{
 				// West-east.
@@ -183,7 +200,7 @@ class TextToLineArtImageConverter
 			cellPos.overwriteWith(cellPosAtStartOfPassCurrent);
 
 			allPassesInDirectionAreComplete =
-				(cellPosAtStartOfPassCurrent.isInRangeMax(sizeInCells) == false);
+				(cellPos.isInRangeMax(sizeInCells) == false);
 		}
 
 	}
@@ -193,7 +210,9 @@ class TextToLineArtImageConverter
 		var cellSizeInPixels =
 			Coords.fromXY(1, 1).multiplyScalar(cellDimensionInPixels);
 		var imageSizeInPixels =
-			sizeInCells.clone().multiply(cellSizeInPixels);
+			sizeInCells
+				.clone()
+				.multiply(cellSizeInPixels);
 
 		var d = document;
 		var canvas = d.createElement("canvas");
