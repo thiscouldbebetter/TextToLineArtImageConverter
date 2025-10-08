@@ -1,0 +1,64 @@
+
+<html>
+<html>
+
+<body>
+
+<div>
+	<h3>Text to Line Art Image</h3>
+
+	<p>
+		Draw a set of connected lines using the pipe, hyphen, and plus-sign characters,
+		then click the button to convert them to a line-art image.
+	</p>
+
+	<div>
+		<label>Lines as Text:<label>
+		<button onclick="UiEventHandler.buttonDemo_Clicked()">Load Demo</button>
+		<br />
+		<textarea
+			id="textareaLinesAsText"
+			cols="80" rows="25"
+			spellcheck="false"
+		></textarea>
+	</div>
+
+	<div>
+		<label>Cell Dimension in Pixels:</label>
+		<input
+			id="inputCellDimensionInPixels"
+			type="number"
+			value="16"
+		></input>
+	</div>
+
+	<div>
+		<label>Line Thickness in Pixels:</label>
+		<input
+			id="inputLineThicknessInPixels"
+			type="number"
+			value="1"
+		></input>
+	</div>
+
+	<div>
+		<button onclick="UiEventHandler.buttonConvertTextToImage_Clicked()">Convert</button>
+	</div>
+
+	<div>
+		<label>Image:</label>
+		<div id="divLinesAsImage">
+			[none]
+		</div>
+	</div>
+
+</div>
+
+<script type="text/javascript" src="Coords.js"></script>
+<script type="text/javascript" src="Edge.js"></script>
+<script type="text/javascript" src="TextToLineArtImageConverter.js"></script>
+<script type="text/javascript" src="UiEventHandler.js"></script>
+
+</body>
+
+</html>
