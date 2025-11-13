@@ -17,6 +17,13 @@ class Coords
 		return new Coords(x, y);
 	}
 
+	absolute()
+	{
+		this.x = Math.abs(this.x);
+		this.y = Math.abs(this.y);
+		return this;
+	}
+
 	add(other)
 	{
 		this.x += other.x;
@@ -34,6 +41,18 @@ class Coords
 	clone()
 	{
 		return new Coords(this.x, this.y);
+	}
+
+	divide(other)
+	{
+		this.x /= other.x;
+		this.y /= other.y;
+		return this;
+	}
+
+	equals(other)
+	{
+		return (this.x == other.x && this.y == other.y);
 	}
 
 	isInRangeMax(max)
@@ -65,6 +84,13 @@ class Coords
 	{
 		this.x = other.x;
 		this.y = other.y;
+		return this;
+	}
+
+	subtract(other)
+	{
+		this.x -= other.x;
+		this.y -= other.y;
 		return this;
 	}
 

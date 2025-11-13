@@ -8,7 +8,12 @@ class UiEventHandler
 			d.getElementById("textareaLinesAsText");
 		var linesAsText = textareaLinesAsText.value;
 
-		var converter = new TextToLineArtImageConverter();
+		var inputCornerColor =
+			d.getElementById("inputCornerColor");
+		var colorToDrawCornerPixelsWith =
+			inputCornerColor.value;
+
+		var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
 
 		var inputCellDimensionInPixels =
 			d.getElementById("inputCellDimensionInPixels");

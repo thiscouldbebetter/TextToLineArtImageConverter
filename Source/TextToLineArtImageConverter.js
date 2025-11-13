@@ -1,13 +1,23 @@
 
 class TextToLineArtImageConverter
 {
+	constructor(colorToDrawCornerPixelsWith)
+	{
+		this.colorToDrawCornerPixelsWith =
+			colorToDrawCornerPixelsWith;
+
+		this._displacement = Coords.create();
+		this._displacementAbsolute = Coords.create();
+		this._pixelPosCurrent = Coords.create();
+	}
+
 	static textDemo()
 	{
 		var linesAsStrings = 
 		[
 			"                                    ",
 			"         +-+                        ",
-			" +-+    /  +--------------------+   ", 
+			" +-+    /  +-----+-------+------+   ", 
 			" | +---+                         \\  ", // Backslashes are escaped.
 			" |                                + ",
 			" | +---+                         /  ",
@@ -20,6 +30,58 @@ class TextToLineArtImageConverter
 		var linesAsString = linesAsStrings.join(newline);
 
 		return linesAsString;
+	}
+
+	lineDrawToGraphicsContextWithColorFromTo(graphics, color, startPos, endPos)
+	{
+		var displacement =
+			this._displacement
+				.overwriteWith(endPos)
+				.subtract(startPos);
+		var displacementAbsolute =
+			this._displacementAbsolute
+				.overwriteWith(displacement)
+				.absolute();
+		var step =
+			displacement
+			.divide(displacementAbsolute);
+
+		var error = displacementAbsolute.x - displacementAbsolute.y;
+
+		var pixelPosCurrent =
+			this._pixelPosCurrent
+				.overwriteWith(startPos);
+
+		while (true)
+		{
+			this.pixelDrawToGraphicsContextWithColorAtPos
+			(
+				graphics, color, pixelPosCurrent
+			);
+
+			if (pixelPosCurrent.equals(endPos) )
+			{
+				break;
+			}
+
+			var errorTimesTwo = error * 2;
+			if (errorTimesTwo > 0 - displacementAbsolute.y)
+			{
+				error = error - displacementAbsolute.y;
+				pixelPosCurrent.x += step.x;
+			}
+			if (errorTimesTwo < displacementAbsolute.x)
+			{
+				error += displacementAbsolute.x;
+				pixelPosCurrent.y += step.y;
+			}
+		}
+	}
+
+	pixelDrawToGraphicsContextWithColorAtPos(graphics, color, pixelPos)
+	{
+		graphics.fillStyle = color;
+		graphics.fillRect(pixelPos.x, pixelPos.y, 1, 1);
 	}
 
 	textToCanvas(edgesAsString, cellDimensionInPixels, lineThicknessInPixels)
@@ -172,7 +234,7 @@ class TextToLineArtImageConverter
 					{
 						var edge = Edge.fromVertices(cornerPosPrev, cellPos.clone() );
 						edgesSoFar.push(edge);
-						cornerPosPrev = null;
+						cornerPosPrev = cellPos.clone();
 					}
 					else if (cellAsChar == charCodeForEdgeInDirection)
 					{
@@ -219,10 +281,10 @@ class TextToLineArtImageConverter
 		canvas.width = imageSizeInPixels.x;
 		canvas.height = imageSizeInPixels.y;
 
-		var graphics = canvas.getContext("2d");
-		graphics.strokeStyle = "DarkGray";
+		var g = canvas.getContext("2d");
 
-		var pixelPos = Coords.create();
+		var pixelPosFrom = Coords.create();
+		var pixelPosTo = Coords.create();
 
 		for (var e = 0; e < edges.length; e++)
 		{
@@ -232,16 +294,29 @@ class TextToLineArtImageConverter
 			var edgeVertex0 = edgeVertices[0];
 			var edgeVertex1 = edgeVertices[1];
 
-			graphics.beginPath();
-			pixelPos
+			pixelPosFrom
 				.overwriteWith(edgeVertex0)
 				.multiply(cellSizeInPixels);
-			graphics.moveTo(pixelPos.x, pixelPos.y);
-			pixelPos
+			pixelPosTo
 				.overwriteWith(edgeVertex1)
 				.multiply(cellSizeInPixels);
-			graphics.lineTo(pixelPos.x, pixelPos.y);
-			graphics.stroke();
+
+			this.lineDrawToGraphicsContextWithColorFromTo
+			(
+				g, "Black", pixelPosFrom, pixelPosTo
+			);
+
+			if (this.colorToDrawCornerPixelsWith != "")
+			{
+				this.pixelDrawToGraphicsContextWithColorAtPos
+				(
+					g, this.colorToDrawCornerPixelsWith, pixelPosFrom
+				);
+				this.pixelDrawToGraphicsContextWithColorAtPos
+				(
+					g, this.colorToDrawCornerPixelsWith, pixelPosTo
+				);
+			}
 		}
 
 		return canvas;
