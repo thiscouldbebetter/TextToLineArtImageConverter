@@ -10,4 +10,9 @@ class Edge
 	{
 		return new Edge( [ vertex0, vertex1 ] );
 	}
+
+	vertexIsPresentAtPos(posToCheck)
+	{
+		return this.vertices.some(v => v.equals(posToCheck) )
+	}
 }

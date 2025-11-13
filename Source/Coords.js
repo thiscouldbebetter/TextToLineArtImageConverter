@@ -43,6 +43,25 @@ class Coords
 		return new Coords(this.x, this.y);
 	}
 
+	dimension(d)
+	{
+		var returnValue =
+			d == 0
+			? this.x
+			: d == 1
+			? this.y
+			: null;
+
+		return returnValue;
+	}
+
+	dimensionSet(d, value)
+	{
+		this.x = (d == 0) ? value : this.x;
+		this.y = (d == 1) ? value : this.y;
+		return this;
+	}
+
 	divide(other)
 	{
 		this.x /= other.x;
@@ -64,6 +83,11 @@ class Coords
 			&& this.y < max.y;
 
 		return returnValue;
+	}
+
+	magnitude()
+	{
+		return Math.sqrt(this.x * this.x + this.y * this.y);
 	}
 
 	multiply(other)

@@ -11,19 +11,108 @@ class TextToLineArtImageConverter
 		this._pixelPosCurrent = Coords.create();
 	}
 
-	static textDemo()
+	static textDemoGetByName(demoName)
+	{
+		var returnValue =
+			demoName == "Tiny Square"
+			? this.textDemoGetTinySquare()
+			: demoName == "Sword"
+			? this.textDemoGetSword()
+			: demoName == "Floor Plan"
+			? this.textDemoGetFloorPlan()
+			: "";
+
+		return returnValue;
+	}
+
+	static textDemoGetFloorPlan()
+	{
+		var linesAsStrings = 
+		[
+			"                           +------+                          ",
+			"                           |      |                          ",
+			" +-------------------------+      +-------------------------+",
+			" |                                                          |",
+			" |                                                          |",
+			" |  +---+  +-----------------+  +------------------------+  |",
+			" |  |+--+  |+------+      +--+  +--++------++---------+  |  |",
+			" |  ||     ||      |      |        ||      ||         |  |  |",
+			" |  ||     ||      |      |        ||      ||         |  |  |",
+			" |  ||     ||      |+-----+        ||      ||      +--+  |  |",
+			" |  |+--+  |+-+  +-+|              ||      |+-+  +-++---+|  |",
+			" |  |+--+  +-+|  |  |              ||      |+-+  +-+|   ||  |",
+			" |  ||       ||  |  |  +--+        ||      ++      ++   ||  |",
+			" |  ||       ++  |+-+  +-+|        ||                   ||  |",
+			" |  ||           ||      ||        ||                   ||  |",
+			" |  ||       ++  ||      ||        ||      ++      ++   ||  |",
+			" |  ||       ||  ||      ||        ||      ||      ||   ||  |",
+			" |  |+-------+|  |+------+|        |+-+  +-++------+++  ||  |",
+			" |  +---------+  +--------+        +--+  +-----------+  ++  |",
+			" |                                                          |",
+			" |                                                          |",
+			" |  ++  +--+  +-------+  +---+  +---+  +-------------+  ++  |",
+			" |  ||  |+-+  +-++---+|  |+--+  +--+|  |+-----++----+|  ||  |",
+			" |  ||  ||      ||   ||  ||        ||  ||     ||    ||  ||  |",
+			" |  ||  ||      ||   ||  ||        ||  ||     ++    ++  ||  |",
+			" |  ||  ||      ||   ||  ||        ||  ||               ||  |",
+			" |  ||  |+------+|   ||  ||        ||  ||     ++    ++  ||  |",
+			" |  ||  +--------+  ++|  ||        ||  ||  +--++----+|  ||  |",
+			" |  ||              | |  ||        ||  |+--+   +--+  |  ||  |",
+			" |  ||              | |  ||        ||  |    +--+  +-+|  ||  |",
+			" |  ||  +--+  +--+  ++|  |+--+  +--+|  |    |       ||  ||  |",
+			" |  ||  |+-+  +-+|   ||  +---+  +---+  |    |       ||  ||  |",
+			" |  ||  ||      ||   ||                |    +--+  +-+|  ||  |",
+			" |  ||  ||      ||   ||                |+---++-+  +-+|  ||  |",
+			" |  ||  ||      ||   ||                ||   ||      ||  ||  |",
+			" |  ||  |+------++---+|                ||   ++      ||  ||  |",
+			" |  ||  +-------++---+|                ||           ||  ||  |",
+			" |  ||          ||   ||                ||           ||  ||  |",
+			" |  ||          ||   |+                +|   ++      ||  ||  |",
+			" |  ||  ++      ||   | \\              / |   ||      ||  ||  |", // Backslash is escaped.
+			" |  ||  |+------+|   |  +----+  +----+  |  +++-+  +-+|  ||  |",
+			" |  ||  +--------+   |       |  |   +--+|  +---+  +--+  ||  |",
+			" |  ||             +-+       |  |   |  ||               ||  |",
+			" |  ||             |        ++  ++  |  ||               ||  |",
+			" |  |+-------------+  +-----+    +--+  |+---------------+|  |",
+			" |  +-----------------+                +-----------------+  |",
+			" |                                                          |",
+			" |                       +---+  +---+                       |",
+			" +-----------------------+   +--+   +-----------------------+"
+		];
+
+		var newline = "\n";
+		var linesAsString = linesAsStrings.join(newline);
+
+		return linesAsString;
+	}
+
+	static textDemoGetSword()
 	{
 		var linesAsStrings = 
 		[
 			"                                    ",
 			"         +-+                        ",
-			" +-+    /  +-----+-------+------+   ", 
+			" +-+    /  +-----=-------=------+   ", // Break the edge into parts.
 			" | +---+                         \\  ", // Backslashes are escaped.
 			" |                                + ",
 			" | +---+                         /  ",
 			" +-+    \\  +--------------------+   ", // Backslashes are escaped.
 			"         +-+                        ",
 			"                                    "
+		];
+
+		var newline = "\n";
+		var linesAsString = linesAsStrings.join(newline);
+
+		return linesAsString;
+	}
+
+	static textDemoGetTinySquare()
+	{
+		var linesAsStrings = 
+		[
+			"++",
+			"++"
 		];
 
 		var newline = "\n";
@@ -210,35 +299,70 @@ class TextToLineArtImageConverter
 	)
 	{
 		var charCodeCorner = "+";
+		var charCodeBreak = "=";
 
 		var cellPosAtStartOfPassCurrent =
 			cellPosAtStartOfPassInitialForDirection.clone();
 		var cellPos = cellPosAtStartOfPassCurrent.clone();
-		var cornerPosPrev = null;
+		var edgeCharsInEdgeSoFar = 0;
 
 		var allPassesInDirectionAreComplete = false;
 
 		while (allPassesInDirectionAreComplete == false)
 		{
 			var passCurrentIsDone = false;
+			var cornerPosPrev = null;
 
 			while (passCurrentIsDone == false)
 			{
-				var cellAsChar = cellRowsAsStrings[cellPos.y][cellPos.x];
+				var cellAsChar =
+					cellRowsAsStrings[cellPos.y][cellPos.x];
 
 				var edgeIsInProgress = (cornerPosPrev != null);
 
 				if (edgeIsInProgress)
 				{
-					if (cellAsChar == charCodeCorner)
+					if
+					(
+						cellAsChar == charCodeCorner
+						|| cellAsChar == charCodeBreak
+					)
 					{
-						var edge = Edge.fromVertices(cornerPosPrev, cellPos.clone() );
-						edgesSoFar.push(edge);
-						cornerPosPrev = cellPos.clone();
+						var edgeShouldBeDisregarded = false;
+
+						if (edgeCharsInEdgeSoFar == 0)
+						{
+							var junctionEdgesIncoming = 
+								edgesSoFar.filter(e => e.vertexIsPresentAtPos(cellPos) );
+							var junctionAlreadyHasTwoIncomingEdges =
+								(junctionEdgesIncoming.length >= 2);
+
+							edgeShouldBeDisregarded = junctionAlreadyHasTwoIncomingEdges;
+						}
+
+						if (edgeShouldBeDisregarded)
+						{
+							// Abandon the edge in progress.
+							cornerPosPrev = null;
+						}
+						else
+						{
+							var cornerPosCurrent = cellPos.clone();
+
+							var edge =
+								Edge.fromVertices(cornerPosPrev, cornerPosCurrent);
+
+							edgesSoFar.push(edge);
+
+							cornerPosPrev =
+								cellAsChar == charCodeBreak
+								? cornerPosCurrent.clone()
+								: null;
+						}
 					}
 					else if (cellAsChar == charCodeForEdgeInDirection)
 					{
-						// Do nothing.
+						edgeCharsInEdgeSoFar++;
 					}
 					else
 					{
@@ -249,6 +373,7 @@ class TextToLineArtImageConverter
 				else if (cellAsChar == charCodeCorner)
 				{
 					cornerPosPrev = cellPos.clone();
+					edgeCharsInEdgeSoFar = 0;
 				}
 
 				cellPos.add(offsetToCellNextInPass);
@@ -265,6 +390,67 @@ class TextToLineArtImageConverter
 				(cellPos.isInRangeMax(sizeInCells) == false);
 		}
 
+	}
+
+	textToCanvas_1_ReadEdgesFromText_JunctionAtPosIsBranched
+	(
+		sizeInCells,
+		cellRowsAsStrings,
+		junctionPos
+	)
+	{
+		// A junction is "branched" if it has more than two incoming edges.
+
+		var junctionIsBranched = false;
+
+		var charCodesForEdgesAsString = "+-|/\\";
+
+		var incomingEdgesCount = 0;
+
+		var neighborOffset = Coords.create();
+		var neighborPos = Coords.create();
+
+		for (var neighborOffsetY = -1; neighborOffsetY <= 1; neighborOffsetY++)
+		{
+			neighborOffset.y = neighborOffsetY;
+
+			for (var neighborOffsetX = -1; neighborOffsetX <= 1; neighborOffsetX++)
+			{
+				neighborOffset.x = neighborOffsetX;
+
+				var neighborOffsetIsNotZero =
+					neighborOffset.x != 0
+					|| neighborOffset.y != 0;
+
+				if (neighborOffsetIsNotZero)
+				{
+					neighborPos
+						.overwriteWith(junctionPos)
+						.add(neighborOffset);
+
+					if (neighborPos.isInRangeMax(sizeInCells) )
+					{
+						var neighborCellAsChar =
+							cellRowsAsStrings[neighborPos.y][neighborPos.x];
+
+						var neighborIsIncomingEdge =
+							charCodesForEdgesAsString.indexOf(neighborCellAsChar) >= 0;
+
+						if (neighborIsIncomingEdge)
+						{
+							incomingEdgesCount++;
+							if (incomingEdgesCount > 2)
+							{
+								junctionIsBranched = true; 
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return junctionIsBranched;
 	}
 
 	textToCanvas_2_DrawEdgesToCanvas(cellDimensionInPixels, sizeInCells, edges)

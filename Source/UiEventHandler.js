@@ -37,9 +37,11 @@ class UiEventHandler
 		divLinesAsImage.appendChild(linesAsCanvas);
 	}
 
-	static buttonDemo_Clicked()
+	static selectDemo_Changed(selectDemo)
 	{
-		var linesAsString = TextToLineArtImageConverter.textDemo();
+		var demoName = selectDemo.value;
+
+		var linesAsString = TextToLineArtImageConverter.textDemoGetByName(demoName);
 
 		var d = document;
 		var textareaLinesAsText =
