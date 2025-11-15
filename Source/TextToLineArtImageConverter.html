@@ -1,6 +1,15 @@
 
 <html>
-<html>
+
+<head>
+	<style>
+		@font-face {
+			font-family: "SquarePlusMinusPipe";
+			src:
+				local("SquarePlusMinusPipe.ttf"),
+		}
+	</style>
+</head>
 
 <body>
 
@@ -14,6 +23,14 @@
 
 	<div>
 		<label>Lines as Text:<label>
+		<label>Font Height in Pixels:</label>
+		<input
+			id=inputFontHeightInPixels"
+			type="number"
+			min="1" max="32" step="1"
+			value="16"
+			onchange="UiEventHandler.inputFontHeightInPixels_Changed(this)"
+		></input>
 		<label>Load Demo:</label>
 		<select onchange="UiEventHandler.selectDemo_Changed(this)">
 			<option>-</option>
@@ -26,6 +43,7 @@
 			id="textareaLinesAsText"
 			cols="80" rows="25"
 			spellcheck="false"
+			style="font-family: SquarePlusMinusPipe; font-size: 16px"
 		></textarea>
 	</div>
 

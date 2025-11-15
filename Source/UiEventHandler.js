@@ -37,6 +37,15 @@ class UiEventHandler
 		divLinesAsImage.appendChild(linesAsCanvas);
 	}
 
+	static inputFontHeightInPixels_Changed(inputFontHeightInPixels)
+	{
+		var d = document;
+		var textareaLinesAsText =
+			d.getElementById("textareaLinesAsText");
+		var fontHeightInPixels = parseInt(inputFontHeightInPixels.value);
+		textareaLinesAsText.fontSize = fontHeightInPixels;
+	}
+
 	static selectDemo_Changed(selectDemo)
 	{
 		var demoName = selectDemo.value;
