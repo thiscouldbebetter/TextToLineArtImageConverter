@@ -20,15 +20,10 @@ class UiEventHandler
 		var cellDimensionInPixels =
 			parseInt(inputCellDimensionInPixels.value);
 
-		var inputLineThicknessInPixels: any =
-			d.getElementById("inputLineThicknessInPixels");
-		var lineThicknessInPixels =
-			parseFloat(inputLineThicknessInPixels.value);
-
 		var linesAsCanvas =
 			converter.textToCanvas
 			(
-				linesAsText, cellDimensionInPixels, lineThicknessInPixels
+				linesAsText, cellDimensionInPixels
 			);
 
 		var divLinesAsImage =

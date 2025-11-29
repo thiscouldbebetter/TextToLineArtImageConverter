@@ -198,12 +198,14 @@ class TextToLineArtImageConverter {
                 offsetFromStartOfPassCurrentToNext.xySet(0, 1);
                 charCodeForEdgeInDirection = charCodeNortheastSouthwest;
             }
-            this.textToCanvas_1_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection, edgesSoFar);
+            var edgesForThisDirection = this.textToCanvas_1_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection);
+            edgesSoFar.push(...edgesForThisDirection);
         }
         var canvas = this.textToCanvas_2_DrawEdgesToCanvas(cellDimensionInPixels, sizeInCells, edgesSoFar);
         return canvas;
     }
-    textToCanvas_1_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection, edgesSoFar) {
+    textToCanvas_1_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection) {
+        var edgesSoFar = [];
         var charCodeCorner = "+";
         var charCodeBreak = "=";
         var cellPosAtStartOfPassCurrent = cellPosAtStartOfPassInitialForDirection.clone();
@@ -261,6 +263,7 @@ class TextToLineArtImageConverter {
             allPassesInDirectionAreComplete =
                 (cellPos.isInRangeMax(sizeInCells) == false);
         }
+        return edgesSoFar;
     }
     textToCanvas_1_ReadEdgesFromText_JunctionAtPosIsBranched(sizeInCells, cellRowsAsStrings, junctionPos) {
         // A junction is "branched" if it has more than two incoming edges.

@@ -185,8 +185,7 @@ class TextToLineArtImageConverter
 	textToCanvas
 	(
 		edgesAsString: string,
-		cellDimensionInPixels: number,
-		lineThicknessInPixels: number
+		cellDimensionInPixels: number
 	): any
 	{
 		var edgesAsStringContainsTabs = (edgesAsString.indexOf("\t") >= 0);
@@ -278,16 +277,17 @@ class TextToLineArtImageConverter
 				charCodeForEdgeInDirection = charCodeNortheastSouthwest;
 			}
 
-			this.textToCanvas_1_ReadEdgesFromText
+			var edgesForThisDirection = this.textToCanvas_1_ReadEdgesFromText
 			(
 				cellRowsAsStrings,
 				sizeInCells,
 				cellPosAtStartOfPassInitialForDirection,
 				offsetToCellNextInPass,
 				offsetFromStartOfPassCurrentToNext,
-				charCodeForEdgeInDirection,
-				edgesSoFar
+				charCodeForEdgeInDirection
 			);
+
+			edgesSoFar.push(...edgesForThisDirection);
 		}
 
 		var canvas = this.textToCanvas_2_DrawEdgesToCanvas
@@ -306,9 +306,10 @@ class TextToLineArtImageConverter
 		offsetToCellNextInPass: Coords,
 		offsetFromStartOfPassCurrentToNext: Coords,
 		charCodeForEdgeInDirection: string,
-		edgesSoFar: Edge[]
-	): void
+	): Edge[]
 	{
+		var edgesSoFar: Edge[] = [];
+
 		var charCodeCorner = "+";
 		var charCodeBreak = "=";
 
@@ -401,6 +402,7 @@ class TextToLineArtImageConverter
 				(cellPos.isInRangeMax(sizeInCells) == false);
 		}
 
+		return edgesSoFar;
 	}
 
 	textToCanvas_1_ReadEdgesFromText_JunctionAtPosIsBranched
