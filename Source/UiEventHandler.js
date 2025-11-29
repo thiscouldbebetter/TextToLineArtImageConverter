@@ -9,9 +9,7 @@ class UiEventHandler {
         var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
         var inputCellDimensionInPixels = d.getElementById("inputCellDimensionInPixels");
         var cellDimensionInPixels = parseInt(inputCellDimensionInPixels.value);
-        var inputLineThicknessInPixels = d.getElementById("inputLineThicknessInPixels");
-        var lineThicknessInPixels = parseFloat(inputLineThicknessInPixels.value);
-        var linesAsCanvas = converter.textToCanvas(linesAsText, cellDimensionInPixels, lineThicknessInPixels);
+        var linesAsCanvas = converter.textToCanvas(linesAsText, cellDimensionInPixels);
         var divLinesAsImage = d.getElementById("divLinesAsImage");
         divLinesAsImage.innerHTML = "";
         divLinesAsImage.appendChild(linesAsCanvas);

@@ -130,7 +130,47 @@ class TextToLineArtImageConverter {
         graphics.fillStyle = color;
         graphics.fillRect(pixelPos.x, pixelPos.y, 1, 1);
     }
-    textToCanvas(edgesAsString, cellDimensionInPixels, lineThicknessInPixels) {
+    // Conversion methods.
+    edgesToCanvas(cellDimensionInPixels, sizeInCells, edges) {
+        var cellSizeInPixels = Coords.fromXY(1, 1).multiplyScalar(cellDimensionInPixels);
+        var imageSizeInPixels = sizeInCells
+            .clone()
+            .multiply(cellSizeInPixels);
+        var d = document;
+        var canvas = d.createElement("canvas");
+        canvas.width = imageSizeInPixels.x;
+        canvas.height = imageSizeInPixels.y;
+        var g = canvas.getContext("2d");
+        var pixelPosFrom = Coords.create();
+        var pixelPosTo = Coords.create();
+        for (var e = 0; e < edges.length; e++) {
+            var edge = edges[e];
+            var edgeVertices = edge.vertices;
+            var edgeVertex0 = edgeVertices[0];
+            var edgeVertex1 = edgeVertices[1];
+            pixelPosFrom
+                .overwriteWith(edgeVertex0)
+                .multiply(cellSizeInPixels);
+            pixelPosTo
+                .overwriteWith(edgeVertex1)
+                .multiply(cellSizeInPixels);
+            this.lineDrawToGraphicsContextWithColorFromTo(g, "Black", pixelPosFrom, pixelPosTo);
+            if (this.colorToDrawCornerPixelsWith != "") {
+                this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosFrom);
+                this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosTo);
+            }
+        }
+        return canvas;
+    }
+    textToCanvas(edgesAsString, cellDimensionInPixels) {
+        var edges = this.textToEdges(edgesAsString, cellDimensionInPixels);
+        var newline = "\n";
+        var cellRowsAsStrings = edgesAsString.split(newline);
+        var sizeInCells = Coords.fromXY(cellRowsAsStrings[0].length, cellRowsAsStrings.length);
+        var canvas = this.edgesToCanvas(cellDimensionInPixels, sizeInCells, edges);
+        return canvas;
+    }
+    textToEdges(edgesAsString, cellDimensionInPixels) {
         var edgesAsStringContainsTabs = (edgesAsString.indexOf("\t") >= 0);
         if (edgesAsStringContainsTabs) {
             this.throwFormatError("The string must not contain tab characters.");
@@ -198,13 +238,12 @@ class TextToLineArtImageConverter {
                 offsetFromStartOfPassCurrentToNext.xySet(0, 1);
                 charCodeForEdgeInDirection = charCodeNortheastSouthwest;
             }
-            var edgesForThisDirection = this.textToCanvas_1_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection);
+            var edgesForThisDirection = this.textToEdges_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection);
             edgesSoFar.push(...edgesForThisDirection);
         }
-        var canvas = this.textToCanvas_2_DrawEdgesToCanvas(cellDimensionInPixels, sizeInCells, edgesSoFar);
-        return canvas;
+        return edgesSoFar;
     }
-    textToCanvas_1_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection) {
+    textToEdges_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection) {
         var edgesSoFar = [];
         var charCodeCorner = "+";
         var charCodeBreak = "=";
@@ -264,70 +303,6 @@ class TextToLineArtImageConverter {
                 (cellPos.isInRangeMax(sizeInCells) == false);
         }
         return edgesSoFar;
-    }
-    textToCanvas_1_ReadEdgesFromText_JunctionAtPosIsBranched(sizeInCells, cellRowsAsStrings, junctionPos) {
-        // A junction is "branched" if it has more than two incoming edges.
-        var junctionIsBranched = false;
-        var charCodesForEdgesAsString = "+-|/\\";
-        var incomingEdgesCount = 0;
-        var neighborOffset = Coords.create();
-        var neighborPos = Coords.create();
-        for (var neighborOffsetY = -1; neighborOffsetY <= 1; neighborOffsetY++) {
-            neighborOffset.y = neighborOffsetY;
-            for (var neighborOffsetX = -1; neighborOffsetX <= 1; neighborOffsetX++) {
-                neighborOffset.x = neighborOffsetX;
-                var neighborOffsetIsNotZero = neighborOffset.x != 0
-                    || neighborOffset.y != 0;
-                if (neighborOffsetIsNotZero) {
-                    neighborPos
-                        .overwriteWith(junctionPos)
-                        .add(neighborOffset);
-                    if (neighborPos.isInRangeMax(sizeInCells)) {
-                        var neighborCellAsChar = cellRowsAsStrings[neighborPos.y][neighborPos.x];
-                        var neighborIsIncomingEdge = charCodesForEdgesAsString.indexOf(neighborCellAsChar) >= 0;
-                        if (neighborIsIncomingEdge) {
-                            incomingEdgesCount++;
-                            if (incomingEdgesCount > 2) {
-                                junctionIsBranched = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return junctionIsBranched;
-    }
-    textToCanvas_2_DrawEdgesToCanvas(cellDimensionInPixels, sizeInCells, edges) {
-        var cellSizeInPixels = Coords.fromXY(1, 1).multiplyScalar(cellDimensionInPixels);
-        var imageSizeInPixels = sizeInCells
-            .clone()
-            .multiply(cellSizeInPixels);
-        var d = document;
-        var canvas = d.createElement("canvas");
-        canvas.width = imageSizeInPixels.x;
-        canvas.height = imageSizeInPixels.y;
-        var g = canvas.getContext("2d");
-        var pixelPosFrom = Coords.create();
-        var pixelPosTo = Coords.create();
-        for (var e = 0; e < edges.length; e++) {
-            var edge = edges[e];
-            var edgeVertices = edge.vertices;
-            var edgeVertex0 = edgeVertices[0];
-            var edgeVertex1 = edgeVertices[1];
-            pixelPosFrom
-                .overwriteWith(edgeVertex0)
-                .multiply(cellSizeInPixels);
-            pixelPosTo
-                .overwriteWith(edgeVertex1)
-                .multiply(cellSizeInPixels);
-            this.lineDrawToGraphicsContextWithColorFromTo(g, "Black", pixelPosFrom, pixelPosTo);
-            if (this.colorToDrawCornerPixelsWith != "") {
-                this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosFrom);
-                this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosTo);
-            }
-        }
-        return canvas;
     }
     throwFormatError(message) {
         throw new Error("Format error: " + message);
