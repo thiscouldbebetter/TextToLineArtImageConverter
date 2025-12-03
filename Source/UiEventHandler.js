@@ -28,7 +28,7 @@ class UiEventHandler {
         var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
         var inputCellDimensionInPixels = d.getElementById("inputCellDimensionInPixels");
         var cellDimensionInPixels = parseInt(inputCellDimensionInPixels.value);
-        var sizeInCells = edgeVertexPosMaxSoFar;
+        var sizeInCells = edgeVertexPosMaxSoFar.add(Coords.fromXY(1, 1));
         var linesAsCanvas = converter.edgesToCanvas(cellDimensionInPixels, sizeInCells, edges);
         var divLinesAsImage = d.getElementById("divLinesAsImage");
         divLinesAsImage.innerHTML = "";

@@ -162,14 +162,6 @@ class TextToLineArtImageConverter {
         }
         return canvas;
     }
-    textToCanvas(edgesAsString, cellDimensionInPixels) {
-        var edges = this.textToEdges(edgesAsString);
-        var newline = "\n";
-        var cellRowsAsStrings = edgesAsString.split(newline);
-        var sizeInCells = Coords.fromXY(cellRowsAsStrings[0].length, cellRowsAsStrings.length);
-        var canvas = this.edgesToCanvas(cellDimensionInPixels, sizeInCells, edges);
-        return canvas;
-    }
     textToEdges(edgesAsString) {
         var edgesAsStringContainsTabs = (edgesAsString.indexOf("\t") >= 0);
         if (edgesAsStringContainsTabs) {
@@ -238,12 +230,12 @@ class TextToLineArtImageConverter {
                 offsetFromStartOfPassCurrentToNext.xySet(0, 1);
                 charCodeForEdgeInDirection = charCodeNortheastSouthwest;
             }
-            var edgesForThisDirection = this.textToEdges_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection);
+            var edgesForThisDirection = this.textToEdges_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection, edgesSoFar);
             edgesSoFar.push(...edgesForThisDirection);
         }
         return edgesSoFar;
     }
-    textToEdges_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection) {
+    textToEdges_ReadEdgesFromText(cellRowsAsStrings, sizeInCells, cellPosAtStartOfPassInitialForDirection, offsetToCellNextInPass, offsetFromStartOfPassCurrentToNext, charCodeForEdgeInDirection, edgesFromPreviousDirections) {
         var edgesSoFar = [];
         var charCodeCorner = "+";
         var charCodeBreak = "=";
@@ -262,7 +254,8 @@ class TextToLineArtImageConverter {
                         || cellAsChar == charCodeBreak) {
                         var edgeShouldBeDisregarded = false;
                         if (edgeCharsInEdgeSoFar == 0) {
-                            var junctionEdgesIncoming = edgesSoFar.filter(e => e.vertexIsPresentAtPos(cellPos));
+                            var junctionEdgesIncoming = edgesFromPreviousDirections
+                                .filter(e => e.vertexIsPresentAtPos(cellPos));
                             var junctionAlreadyHasTwoIncomingEdges = (junctionEdgesIncoming.length >= 2);
                             edgeShouldBeDisregarded = junctionAlreadyHasTwoIncomingEdges;
                         }

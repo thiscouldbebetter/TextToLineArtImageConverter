@@ -51,7 +51,7 @@ class UiEventHandler
 		var cellDimensionInPixels =
 			parseInt(inputCellDimensionInPixels.value);
 
-		var sizeInCells = edgeVertexPosMaxSoFar;
+		var sizeInCells = edgeVertexPosMaxSoFar.add(Coords.fromXY(1, 1) );
 
 		var linesAsCanvas =
 			converter.edgesToCanvas
@@ -60,7 +60,6 @@ class UiEventHandler
 				sizeInCells,
 				edges
 			);
-
 
 		var divLinesAsImage =
 			d.getElementById("divLinesAsImage");

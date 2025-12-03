@@ -244,31 +244,6 @@ class TextToLineArtImageConverter
 		return canvas;
 	}
 
-	textToCanvas
-	(
-		edgesAsString: string,
-		cellDimensionInPixels: number
-	): any
-	{
-		var edges = this.textToEdges(edgesAsString);
-
-		var newline = "\n";
-		var cellRowsAsStrings = edgesAsString.split(newline);
-		var sizeInCells = Coords.fromXY
-		(
-			cellRowsAsStrings[0].length,
-			cellRowsAsStrings.length
-		);
-
-		var canvas = this.edgesToCanvas
-		(
-			cellDimensionInPixels, sizeInCells, edges
-		);
-
-		return canvas;
-
-	}
-
 	textToEdges
 	(
 		edgesAsString: string
@@ -370,7 +345,8 @@ class TextToLineArtImageConverter
 				cellPosAtStartOfPassInitialForDirection,
 				offsetToCellNextInPass,
 				offsetFromStartOfPassCurrentToNext,
-				charCodeForEdgeInDirection
+				charCodeForEdgeInDirection,
+				edgesSoFar
 			);
 
 			edgesSoFar.push(...edgesForThisDirection);
@@ -387,6 +363,7 @@ class TextToLineArtImageConverter
 		offsetToCellNextInPass: Coords,
 		offsetFromStartOfPassCurrentToNext: Coords,
 		charCodeForEdgeInDirection: string,
+		edgesFromPreviousDirections: Edge[]
 	): Edge[]
 	{
 		var edgesSoFar: Edge[] = [];
@@ -426,7 +403,9 @@ class TextToLineArtImageConverter
 						if (edgeCharsInEdgeSoFar == 0)
 						{
 							var junctionEdgesIncoming = 
-								edgesSoFar.filter(e => e.vertexIsPresentAtPos(cellPos) );
+								edgesFromPreviousDirections
+									.filter(e => e.vertexIsPresentAtPos(cellPos) );
+
 							var junctionAlreadyHasTwoIncomingEdges =
 								(junctionEdgesIncoming.length >= 2);
 
