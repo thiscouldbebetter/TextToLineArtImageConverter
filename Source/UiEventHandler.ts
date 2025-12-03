@@ -8,10 +8,21 @@ class UiEventHandler
 			d.getElementById("textareaLinesAsText");
 		var linesAsText = textareaLinesAsText.value;
 
-		var inputCornerColor: any =
-			d.getElementById("inputCornerColor");
-		var colorToDrawCornerPixelsWith =
-			inputCornerColor.value;
+
+		var checkboxHighlightEdgeEndpoints: any =
+			d.getElementById("checkboxHighlightEdgeEndpoints");
+		var edgeEndpointsShouldBeHighlighted =
+			checkboxHighlightEdgeEndpoints.checked;
+
+		var colorToDrawCornerPixelsWith: string = null;
+
+		if (edgeEndpointsShouldBeHighlighted)
+		{
+			var inputCornerColor: any =
+				d.getElementById("inputCornerColor");
+			colorToDrawCornerPixelsWith =
+				inputCornerColor.value;
+		}
 
 		var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
 

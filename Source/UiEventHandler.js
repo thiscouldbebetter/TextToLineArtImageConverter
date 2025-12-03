@@ -4,8 +4,14 @@ class UiEventHandler {
         var d = document;
         var textareaLinesAsText = d.getElementById("textareaLinesAsText");
         var linesAsText = textareaLinesAsText.value;
-        var inputCornerColor = d.getElementById("inputCornerColor");
-        var colorToDrawCornerPixelsWith = inputCornerColor.value;
+        var checkboxHighlightEdgeEndpoints = d.getElementById("checkboxHighlightEdgeEndpoints");
+        var edgeEndpointsShouldBeHighlighted = checkboxHighlightEdgeEndpoints.checked;
+        var colorToDrawCornerPixelsWith = null;
+        if (edgeEndpointsShouldBeHighlighted) {
+            var inputCornerColor = d.getElementById("inputCornerColor");
+            colorToDrawCornerPixelsWith =
+                inputCornerColor.value;
+        }
         var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
         var inputCellDimensionInPixels = d.getElementById("inputCellDimensionInPixels");
         var cellDimensionInPixels = parseInt(inputCellDimensionInPixels.value);

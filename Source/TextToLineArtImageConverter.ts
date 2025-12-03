@@ -228,7 +228,7 @@ class TextToLineArtImageConverter
 				g, "Black", pixelPosFrom, pixelPosTo
 			);
 
-			if (this.colorToDrawCornerPixelsWith != "")
+			if (this.colorToDrawCornerPixelsWith != null)
 			{
 				this.pixelDrawToGraphicsContextWithColorAtPos
 				(

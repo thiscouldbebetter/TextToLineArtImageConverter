@@ -155,7 +155,7 @@ class TextToLineArtImageConverter {
                 .overwriteWith(edgeVertex1)
                 .multiply(cellSizeInPixels);
             this.lineDrawToGraphicsContextWithColorFromTo(g, "Black", pixelPosFrom, pixelPosTo);
-            if (this.colorToDrawCornerPixelsWith != "") {
+            if (this.colorToDrawCornerPixelsWith != null) {
                 this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosFrom);
                 this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosTo);
             }
