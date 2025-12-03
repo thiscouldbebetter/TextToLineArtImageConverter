@@ -48,6 +48,21 @@
 	</div>
 
 	<div>
+		<button onclick="UiEventHandler.buttonConvertTextToEdges_Clicked()">Convert Text to Edges</button>
+	</div>
+
+	<div>
+		<label>Edges:</label>
+		<div>
+			<textarea
+				id="textareaEdgesAsText"
+				cols="64" rows="8"
+				spellcheck="false"
+			></textarea>
+		</div>
+	</div>
+
+	<div>
 		<label>Cell Dimension in Pixels:</label>
 		<input
 			id="inputCellDimensionInPixels"
@@ -67,9 +82,10 @@
 			id="inputCornerColor"
 			value="rgb(255, 0, 0)"
 		></input>
+	</div>
 
 	<div>
-		<button onclick="UiEventHandler.buttonConvertTextToImage_Clicked()">Convert</button>
+		<button onclick="UiEventHandler.buttonConvertEdgesToCanvas_Clicked()">Convert Edges to Image</button>
 	</div>
 
 	<div>

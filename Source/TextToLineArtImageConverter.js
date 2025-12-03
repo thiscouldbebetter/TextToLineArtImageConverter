@@ -163,14 +163,14 @@ class TextToLineArtImageConverter {
         return canvas;
     }
     textToCanvas(edgesAsString, cellDimensionInPixels) {
-        var edges = this.textToEdges(edgesAsString, cellDimensionInPixels);
+        var edges = this.textToEdges(edgesAsString);
         var newline = "\n";
         var cellRowsAsStrings = edgesAsString.split(newline);
         var sizeInCells = Coords.fromXY(cellRowsAsStrings[0].length, cellRowsAsStrings.length);
         var canvas = this.edgesToCanvas(cellDimensionInPixels, sizeInCells, edges);
         return canvas;
     }
-    textToEdges(edgesAsString, cellDimensionInPixels) {
+    textToEdges(edgesAsString) {
         var edgesAsStringContainsTabs = (edgesAsString.indexOf("\t") >= 0);
         if (edgesAsStringContainsTabs) {
             this.throwFormatError("The string must not contain tab characters.");

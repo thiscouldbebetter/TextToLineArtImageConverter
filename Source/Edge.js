@@ -9,4 +9,17 @@ class Edge {
     vertexIsPresentAtPos(posToCheck) {
         return this.vertices.some(v => v.equals(posToCheck));
     }
+    // Serialization.
+    static fromStringFromVertexXxYToVertexXxY(edgeAsString) {
+        var edgeVerticesAsStrings = edgeAsString.split("-");
+        var edgeVertices = edgeVerticesAsStrings.map(x => Coords.fromStringXxY(x));
+        var edge = new Edge(edgeVertices);
+        return edge;
+    }
+    toStringFromVertexAsXxYToVertexAsXxY() {
+        var returnValue = this.vertices[0].toStringXxY()
+            + "-"
+            + this.vertices[1].toStringXxY();
+        return returnValue;
+    }
 }

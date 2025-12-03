@@ -250,7 +250,7 @@ class TextToLineArtImageConverter
 		cellDimensionInPixels: number
 	): any
 	{
-		var edges = this.textToEdges(edgesAsString, cellDimensionInPixels);
+		var edges = this.textToEdges(edgesAsString);
 
 		var newline = "\n";
 		var cellRowsAsStrings = edgesAsString.split(newline);
@@ -271,8 +271,7 @@ class TextToLineArtImageConverter
 
 	textToEdges
 	(
-		edgesAsString: string,
-		cellDimensionInPixels: number
+		edgesAsString: string
 	): Edge[]
 	{
 		var edgesAsStringContainsTabs = (edgesAsString.indexOf("\t") >= 0);

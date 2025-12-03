@@ -84,4 +84,12 @@ class Coords {
         this.y = y;
         return this;
     }
+    // Serialization.
+    static fromStringXxY(coordsAsStringXxY) {
+        var dimensions = coordsAsStringXxY.split("x").map(x => parseFloat(x));
+        return Coords.fromXY(dimensions[0], dimensions[1]);
+    }
+    toStringXxY() {
+        return this.x + "x" + this.y;
+    }
 }

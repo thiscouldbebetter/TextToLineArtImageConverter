@@ -127,4 +127,17 @@ class Coords
 		this.y = y;
 		return this;
 	}
+
+	// Serialization.
+
+	static fromStringXxY(coordsAsStringXxY: string): Coords
+	{
+		var dimensions = coordsAsStringXxY.split("x").map(x => parseFloat(x) );
+		return Coords.fromXY(dimensions[0], dimensions[1]);
+	}
+
+	toStringXxY(): string
+	{
+		return this.x + "x" + this.y;
+	}
 }
