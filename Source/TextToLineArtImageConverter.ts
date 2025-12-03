@@ -22,6 +22,8 @@ class TextToLineArtImageConverter
 		var returnValue =
 			demoName == "Tiny Square"
 			? this.textDemoGetTinySquare()
+			: demoName == "Two Tiny Squares"
+			? this.textDemoGetTwoTinySquares()
 			: demoName == "Sword"
 			? this.textDemoGetSword()
 			: demoName == "Floor Plan"
@@ -127,6 +129,23 @@ class TextToLineArtImageConverter
 		return linesAsString;
 	}
 
+	static textDemoGetTwoTinySquares(): string
+	{
+		var linesAsStrings = 
+		[
+			"++",
+			"++",
+			"..",
+			"++",
+			"++"
+		];
+
+		var newline = "\n";
+		var linesAsString = linesAsStrings.join(newline);
+
+		return linesAsString;
+	}
+
 	lineDrawToGraphicsContextWithColorFromTo
 	(
 		graphics: any, color: string, startPos: Coords, endPos: Coords
@@ -184,11 +203,11 @@ class TextToLineArtImageConverter
 
 	// Conversion methods.
 
-	edgesToCanvas
+	pathsToCanvas
 	(
 		cellDimensionInPixels: number,
 		sizeInCells: Coords,
-		edges: Edge[]
+		paths: Path[]
 	): any
 	{
 		var cellSizeInPixels =
@@ -208,36 +227,45 @@ class TextToLineArtImageConverter
 		var pixelPosFrom = Coords.create();
 		var pixelPosTo = Coords.create();
 
-		for (var e = 0; e < edges.length; e++)
+		for (var p = 0; p < paths.length; p++)
 		{
-			var edge = edges[e];
+			var path = paths[p];
+			var pathVertices = path.vertices;
 
-			var edgeVertices = edge.vertices;
-			var edgeVertex0 = edgeVertices[0];
-			var edgeVertex1 = edgeVertices[1];
-
-			pixelPosFrom
-				.overwriteWith(edgeVertex0)
-				.multiply(cellSizeInPixels);
-			pixelPosTo
-				.overwriteWith(edgeVertex1)
-				.multiply(cellSizeInPixels);
-
-			this.lineDrawToGraphicsContextWithColorFromTo
-			(
-				g, "Black", pixelPosFrom, pixelPosTo
-			);
-
-			if (this.colorToDrawCornerPixelsWith != null)
+			for (var v = 0; v < pathVertices.length; v++)
 			{
-				this.pixelDrawToGraphicsContextWithColorAtPos
+				var vertex = pathVertices[v];
+
+				var vNext = v + 1;
+				if (vNext >= pathVertices.length)
+				{
+					vNext = 0;  // todo - Are non-cyclical paths allowed?
+				}
+				var vertexNext = pathVertices[vNext];
+
+				pixelPosFrom
+					.overwriteWith(vertex)
+					.multiply(cellSizeInPixels);
+				pixelPosTo
+					.overwriteWith(vertexNext)
+					.multiply(cellSizeInPixels);
+
+				this.lineDrawToGraphicsContextWithColorFromTo
 				(
-					g, this.colorToDrawCornerPixelsWith, pixelPosFrom
+					g, "Black", pixelPosFrom, pixelPosTo
 				);
-				this.pixelDrawToGraphicsContextWithColorAtPos
-				(
-					g, this.colorToDrawCornerPixelsWith, pixelPosTo
-				);
+
+				if (this.colorToDrawCornerPixelsWith != null)
+				{
+					this.pixelDrawToGraphicsContextWithColorAtPos
+					(
+						g, this.colorToDrawCornerPixelsWith, pixelPosFrom
+					);
+					this.pixelDrawToGraphicsContextWithColorAtPos
+					(
+						g, this.colorToDrawCornerPixelsWith, pixelPosTo
+					);
+				}
 			}
 		}
 

@@ -18,6 +18,12 @@ class Edge
 		return this.vertices.some(v => v.equals(posToCheck) )
 	}
 
+	verticesReverse(): Edge
+	{
+		this.vertices = this.vertices.reverse();
+		return this;
+	}
+
 	// Serialization.
 
 	static fromStringFromVertexXxYToVertexXxY(edgeAsString: string): Edge

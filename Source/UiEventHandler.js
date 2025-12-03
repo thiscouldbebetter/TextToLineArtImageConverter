@@ -1,50 +1,51 @@
 "use strict";
 class UiEventHandler {
-    static buttonConvertEdgesToCanvas_Clicked() {
+    static buttonConvertPathsToCanvas_Clicked() {
         var d = document;
+        var textareaPaths = d.getElementById("textareaPaths");
+        var newline = "\n";
+        var pathsSerialized = textareaPaths.value.split(newline);
+        var paths = pathsSerialized.map(x => Path.fromStringVerticesAsXxY(x));
+        var pathVerticesAll = [];
+        paths.forEach(p => pathVerticesAll.push(...p.vertices));
+        var pathVertexPosMaxSoFar = pathVerticesAll[0].clone();
+        pathVerticesAll.forEach(v => {
+            if (v.x > pathVertexPosMaxSoFar.x) {
+                pathVertexPosMaxSoFar.x = v.x;
+            }
+            if (v.y > pathVertexPosMaxSoFar.y) {
+                pathVertexPosMaxSoFar.y = v.y;
+            }
+        });
+        var checkboxHighlightEdgeEndpoints = d.getElementById("checkboxHighlightEdgeEndpoints");
+        var edgeEndpointsShouldBeHighlighted = checkboxHighlightEdgeEndpoints.checked;
         var colorToDrawCornerPixelsWith = null;
         if (edgeEndpointsShouldBeHighlighted) {
             var inputCornerColor = d.getElementById("inputCornerColor");
             colorToDrawCornerPixelsWith =
                 inputCornerColor.value;
         }
-        var textareaEdgesAsText = d.getElementById("textareaEdgesAsText");
-        var newline = "\n";
-        var edgesSerialized = textareaEdgesAsText.value.split(newline);
-        var edges = edgesSerialized.map(x => Edge.fromStringFromVertexXxYToVertexXxY(x));
-        var edgeVerticesAll = [];
-        edges.forEach(e => edgeVerticesAll.push(...e.vertices));
-        var edgeVertexPosMaxSoFar = edgeVerticesAll[0].clone();
-        edgeVerticesAll.forEach(v => {
-            if (v.x > edgeVertexPosMaxSoFar.x) {
-                edgeVertexPosMaxSoFar.x = v.x;
-            }
-            if (v.y > edgeVertexPosMaxSoFar.y) {
-                edgeVertexPosMaxSoFar.y = v.y;
-            }
-        });
-        var checkboxHighlightEdgeEndpoints = d.getElementById("checkboxHighlightEdgeEndpoints");
-        var edgeEndpointsShouldBeHighlighted = checkboxHighlightEdgeEndpoints.checked;
         var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
         var inputCellDimensionInPixels = d.getElementById("inputCellDimensionInPixels");
         var cellDimensionInPixels = parseInt(inputCellDimensionInPixels.value);
-        var sizeInCells = edgeVertexPosMaxSoFar.add(Coords.fromXY(1, 1));
-        var linesAsCanvas = converter.edgesToCanvas(cellDimensionInPixels, sizeInCells, edges);
+        var sizeInCells = pathVertexPosMaxSoFar.add(Coords.fromXY(1, 1));
+        var linesAsCanvas = converter.pathsToCanvas(cellDimensionInPixels, sizeInCells, paths);
         var divLinesAsImage = d.getElementById("divLinesAsImage");
         divLinesAsImage.innerHTML = "";
         divLinesAsImage.appendChild(linesAsCanvas);
     }
-    static buttonConvertTextToEdges_Clicked() {
+    static buttonConvertTextToPaths_Clicked() {
         var d = document;
         var textareaLinesAsText = d.getElementById("textareaLinesAsText");
         var linesAsText = textareaLinesAsText.value;
         var converter = new TextToLineArtImageConverter(null);
-        var linesAsEdges = converter.textToEdges(linesAsText);
-        var edgesSerialized = linesAsEdges.map(x => x.toStringFromVertexAsXxYToVertexAsXxY());
+        var edges = converter.textToEdges(linesAsText);
+        var paths = Path.manyFromEdges(edges);
+        var pathsSerialized = paths.map(x => x.toStringVerticesAsXxY());
         var newline = "\n";
-        var edgesSerializedJoined = edgesSerialized.join(newline);
-        var textareaEdgesAsText = d.getElementById("textareaEdgesAsText");
-        textareaEdgesAsText.value = edgesSerializedJoined;
+        var pathsSerializedJoined = pathsSerialized.join(newline);
+        var textareaPaths = d.getElementById("textareaPaths");
+        textareaPaths.value = pathsSerializedJoined;
     }
     static inputFontHeightInPixels_Changed(inputFontHeightInPixels) {
         var d = document;

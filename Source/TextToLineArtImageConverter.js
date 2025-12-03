@@ -10,11 +10,13 @@ class TextToLineArtImageConverter {
     static textDemoGetByName(demoName) {
         var returnValue = demoName == "Tiny Square"
             ? this.textDemoGetTinySquare()
-            : demoName == "Sword"
-                ? this.textDemoGetSword()
-                : demoName == "Floor Plan"
-                    ? this.textDemoGetFloorPlan()
-                    : "";
+            : demoName == "Two Tiny Squares"
+                ? this.textDemoGetTwoTinySquares()
+                : demoName == "Sword"
+                    ? this.textDemoGetSword()
+                    : demoName == "Floor Plan"
+                        ? this.textDemoGetFloorPlan()
+                        : "";
         return returnValue;
     }
     static textDemoGetFloorPlan() {
@@ -98,6 +100,18 @@ class TextToLineArtImageConverter {
         var linesAsString = linesAsStrings.join(newline);
         return linesAsString;
     }
+    static textDemoGetTwoTinySquares() {
+        var linesAsStrings = [
+            "++",
+            "++",
+            "..",
+            "++",
+            "++"
+        ];
+        var newline = "\n";
+        var linesAsString = linesAsStrings.join(newline);
+        return linesAsString;
+    }
     lineDrawToGraphicsContextWithColorFromTo(graphics, color, startPos, endPos) {
         var displacement = this._displacement
             .overwriteWith(endPos)
@@ -131,7 +145,7 @@ class TextToLineArtImageConverter {
         graphics.fillRect(pixelPos.x, pixelPos.y, 1, 1);
     }
     // Conversion methods.
-    edgesToCanvas(cellDimensionInPixels, sizeInCells, edges) {
+    pathsToCanvas(cellDimensionInPixels, sizeInCells, paths) {
         var cellSizeInPixels = Coords.fromXY(1, 1).multiplyScalar(cellDimensionInPixels);
         var imageSizeInPixels = sizeInCells
             .clone()
@@ -143,21 +157,27 @@ class TextToLineArtImageConverter {
         var g = canvas.getContext("2d");
         var pixelPosFrom = Coords.create();
         var pixelPosTo = Coords.create();
-        for (var e = 0; e < edges.length; e++) {
-            var edge = edges[e];
-            var edgeVertices = edge.vertices;
-            var edgeVertex0 = edgeVertices[0];
-            var edgeVertex1 = edgeVertices[1];
-            pixelPosFrom
-                .overwriteWith(edgeVertex0)
-                .multiply(cellSizeInPixels);
-            pixelPosTo
-                .overwriteWith(edgeVertex1)
-                .multiply(cellSizeInPixels);
-            this.lineDrawToGraphicsContextWithColorFromTo(g, "Black", pixelPosFrom, pixelPosTo);
-            if (this.colorToDrawCornerPixelsWith != null) {
-                this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosFrom);
-                this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosTo);
+        for (var p = 0; p < paths.length; p++) {
+            var path = paths[p];
+            var pathVertices = path.vertices;
+            for (var v = 0; v < pathVertices.length; v++) {
+                var vertex = pathVertices[v];
+                var vNext = v + 1;
+                if (vNext >= pathVertices.length) {
+                    vNext = 0; // todo - Are non-cyclical paths allowed?
+                }
+                var vertexNext = pathVertices[vNext];
+                pixelPosFrom
+                    .overwriteWith(vertex)
+                    .multiply(cellSizeInPixels);
+                pixelPosTo
+                    .overwriteWith(vertexNext)
+                    .multiply(cellSizeInPixels);
+                this.lineDrawToGraphicsContextWithColorFromTo(g, "Black", pixelPosFrom, pixelPosTo);
+                if (this.colorToDrawCornerPixelsWith != null) {
+                    this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosFrom);
+                    this.pixelDrawToGraphicsContextWithColorAtPos(g, this.colorToDrawCornerPixelsWith, pixelPosTo);
+                }
             }
         }
         return canvas;

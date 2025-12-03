@@ -1,9 +1,38 @@
 
 class UiEventHandler
 {
-	static buttonConvertEdgesToCanvas_Clicked()
+	static buttonConvertPathsToCanvas_Clicked()
 	{
 		var d = document;
+
+		var textareaPaths: any =
+			d.getElementById("textareaPaths");
+		var newline = "\n";
+		var pathsSerialized = (textareaPaths.value as string).split(newline);
+		var paths = pathsSerialized.map(x => Path.fromStringVerticesAsXxY(x) )
+
+		var pathVerticesAll: Coords[] = [];
+		paths.forEach(p => pathVerticesAll.push(...p.vertices) );
+		var pathVertexPosMaxSoFar = pathVerticesAll[0].clone();
+		pathVerticesAll.forEach
+		(
+			v =>
+			{
+				if (v.x > pathVertexPosMaxSoFar.x)
+				{
+					pathVertexPosMaxSoFar.x = v.x;
+				}
+				if (v.y > pathVertexPosMaxSoFar.y)
+				{
+					pathVertexPosMaxSoFar.y = v.y;
+				}
+			}
+		);
+
+		var checkboxHighlightEdgeEndpoints: any =
+			d.getElementById("checkboxHighlightEdgeEndpoints");
+		var edgeEndpointsShouldBeHighlighted =
+			checkboxHighlightEdgeEndpoints.checked;
 
 		var colorToDrawCornerPixelsWith: string = null;
 
@@ -15,35 +44,6 @@ class UiEventHandler
 				inputCornerColor.value;
 		}
 
-		var textareaEdgesAsText: any =
-			d.getElementById("textareaEdgesAsText");
-		var newline = "\n";
-		var edgesSerialized = (textareaEdgesAsText.value as string).split(newline);
-		var edges = edgesSerialized.map(x => Edge.fromStringFromVertexXxYToVertexXxY(x) )
-
-		var edgeVerticesAll: Coords[] = [];
-		edges.forEach(e => edgeVerticesAll.push(...e.vertices) );
-		var edgeVertexPosMaxSoFar = edgeVerticesAll[0].clone();
-		edgeVerticesAll.forEach
-		(
-			v =>
-			{
-				if (v.x > edgeVertexPosMaxSoFar.x)
-				{
-					edgeVertexPosMaxSoFar.x = v.x;
-				}
-				if (v.y > edgeVertexPosMaxSoFar.y)
-				{
-					edgeVertexPosMaxSoFar.y = v.y;
-				}
-			}
-		);
-
-		var checkboxHighlightEdgeEndpoints: any =
-			d.getElementById("checkboxHighlightEdgeEndpoints");
-		var edgeEndpointsShouldBeHighlighted =
-			checkboxHighlightEdgeEndpoints.checked;
-
 		var converter = new TextToLineArtImageConverter(colorToDrawCornerPixelsWith);
 
 		var inputCellDimensionInPixels: any =
@@ -51,14 +51,14 @@ class UiEventHandler
 		var cellDimensionInPixels =
 			parseInt(inputCellDimensionInPixels.value);
 
-		var sizeInCells = edgeVertexPosMaxSoFar.add(Coords.fromXY(1, 1) );
+		var sizeInCells = pathVertexPosMaxSoFar.add(Coords.fromXY(1, 1) );
 
 		var linesAsCanvas =
-			converter.edgesToCanvas
+			converter.pathsToCanvas
 			(
 				cellDimensionInPixels,
 				sizeInCells,
-				edges
+				paths
 			);
 
 		var divLinesAsImage =
@@ -67,7 +67,7 @@ class UiEventHandler
 		divLinesAsImage.appendChild(linesAsCanvas);
 	}
 
-	static buttonConvertTextToEdges_Clicked(): void
+	static buttonConvertTextToPaths_Clicked(): void
 	{
 		var d = document;
 		var textareaLinesAsText: any =
@@ -76,18 +76,20 @@ class UiEventHandler
 
 		var converter = new TextToLineArtImageConverter(null);
 
-		var linesAsEdges =
+		var edges =
 			converter.textToEdges(linesAsText);
 
-		var edgesSerialized =
-			linesAsEdges.map(x => x.toStringFromVertexAsXxYToVertexAsXxY() );
+		var paths = Path.manyFromEdges(edges);
+
+		var pathsSerialized =
+			paths.map(x => x.toStringVerticesAsXxY() );
 
 		var newline = "\n";
 
-		var edgesSerializedJoined = edgesSerialized.join(newline);
-		var textareaEdgesAsText: any =
-			d.getElementById("textareaEdgesAsText");
-		textareaEdgesAsText.value = edgesSerializedJoined;
+		var pathsSerializedJoined = pathsSerialized.join(newline);
+		var textareaPaths: any =
+			d.getElementById("textareaPaths");
+		textareaPaths.value = pathsSerializedJoined;
 	}
 
 

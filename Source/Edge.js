@@ -9,6 +9,10 @@ class Edge {
     vertexIsPresentAtPos(posToCheck) {
         return this.vertices.some(v => v.equals(posToCheck));
     }
+    verticesReverse() {
+        this.vertices = this.vertices.reverse();
+        return this;
+    }
     // Serialization.
     static fromStringFromVertexXxYToVertexXxY(edgeAsString) {
         var edgeVerticesAsStrings = edgeAsString.split("-");
